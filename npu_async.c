@@ -454,6 +454,19 @@ static void npuAsyncProcessUplineTransparent(Tcb *tp)
             *echoPtr++ = ch;
             }
 
+        /* CYBIS wants transparent mode plus the ability to turn xon/xoff on and off at will
+         * after digging through all the manuals I see nothing that gives a blessing to do this
+         * but I see nothing that forbids it either, I choose to interpret what PNI does as legal */
+        if(tp->params.fvOutFlowControl) {
+            if( (ch == ChrDC1 || ch == ChrDC3) ){
+                if(ch == ChrDC1)
+                    tp->xoff = FALSE; /* XON turn output on */
+                else
+                    tp->xoff = TRUE; /* XOFF turn output off */
+                //fprintf(stderr,"flow control handled in transparent mode! %x, %d\n ",ch,tp->connType);
+            }
+        }
+
         if (tp->params.fvXCharFlag && ch == tp->params.fvXChar)
             {
             if (!tp->params.fvXModeMultiple)
