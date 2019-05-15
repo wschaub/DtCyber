@@ -463,7 +463,8 @@ static void npuAsyncProcessUplineTransparent(Tcb *tp)
                     tp->xoff = FALSE; /* XON turn output on */
                 else
                     tp->xoff = TRUE; /* XOFF turn output off */
-                //fprintf(stderr,"flow control handled in transparent mode! %x, %d\n ",ch,tp->connType);
+                fprintf(stderr,"flow control handled in transparent mode! %x, portnumber = %d connfd = %d\n ",ch,tp->portNumber,tp->connFd);
+                continue; /* swallow xon/xoff char */
             }
         }
 

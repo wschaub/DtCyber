@@ -467,7 +467,11 @@ void npuTipProcessBuffer(NpuBuffer *bp, int priority)
         /*
         **  Interrupt command.  Discard any pending output.
         */
-        tp->xoff = FALSE;
+        fprintf(stderr,"interrupt, portnum = %d, connfd = %d\n",tp->portNumber,tp->connFd);
+        if(! (tp->params.fvXInput && tp->params.fvInFlowControl)) {
+            fprintf(stderr,"interrupt, xoff = false, portnum = %d, connfd = %d\n",tp->portNumber,tp->connFd);
+            tp->xoff = FALSE;
+        }
         npuTipDiscardOutputQ(tp);
         intrRsp[BlkOffCN] = block[BlkOffCN];
         intrRsp[BlkOffBTBSN] &= BlkMaskBT;
@@ -503,6 +507,7 @@ void npuTipTerminateConnection(Tcb *tp)
     /*
     **  Clean up flow control state and discard any pending output.
     */
+        fprintf(stderr,"tip: terminated connection portnum = %d, connfd = %d\n",tp->portNumber,tp->connFd);
     tp->xoff = FALSE;
     npuTipDiscardOutputQ(tp);
     tp->state = StTermHostDisconnect;
@@ -704,11 +709,14 @@ bool npuTipParseFnFv(u8 *mp, int len, Tcb *tp)
             pp->fvOutFlowControl = mp[1] != 0;
             if (!pp->fvOutFlowControl)
                 {
+                    fprintf(stderr,"flow control turned off by PNI portnum = %d, connfd = %d\n",tp->portNumber,tp->connFd);
                 /*
                 **  If flow control is now disabled, turn off the xoff flag
                 **  if it was set.
                 */
                 tp->xoff = FALSE;
+                } else {
+                    fprintf(stderr,"flow control turned on by PNI portnum = %d, confd = %d\n",tp->portNumber,tp->connFd);
                 }
             break;
 
