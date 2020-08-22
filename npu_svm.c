@@ -545,7 +545,6 @@ void npuSvmDiscRequestTerminal(Tcb *tp)
         /*
         **  Clean up flow control state and discard any pending output.
         */
-            fprintf(stderr,"svm: StTermHostConnected hit in SvmDiscRequestTerminal: portnum = %d connfd = %d\n",tp->portNumber,tp->connFd);
         tp->xoff = FALSE;
         npuTipDiscardOutputQ(tp);
         tp->state = StTermNpuDisconnect;
