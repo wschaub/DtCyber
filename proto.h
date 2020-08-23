@@ -339,6 +339,10 @@ extern ModelType modelType;
 extern char persistDir[];
 extern u16 npuNetTelnetPort;
 extern u16 npuNetTcpConns;
+/* NOS Idle Loop throttle */
+extern bool NOSIdle;
+extern u32 idletime;
+extern u32 idletrigger;
 
 #endif /* PROTO_H */
 /*---------------------------  End Of File  ------------------------------*/

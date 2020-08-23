@@ -75,6 +75,9 @@ static void tracePpuCalls(void);
 char ppKeyIn;
 bool emulationActive = TRUE;
 u32 cycles;
+bool NOSIdle = FALSE;    /* NOS2 Idle loop detection */
+u32 idletrigger = 200;  /* sleep every <idletrigger> cycles of the idle loop */
+u32 idletime = 500; /* microseconds to sleep when idle */
 #if CcCycleTime
 double cycleTime;
 #endif
@@ -84,7 +87,8 @@ double cycleTime;
 **  Private Variables
 **  -----------------
 */
-
+bool busyFlag = FALSE;
+u32 idlecycles = 0;      /* count of idle loop cycles */
 /*
 **--------------------------------------------------------------------------
 **
@@ -199,7 +203,21 @@ int main(int argc, char **argv)
 
         channelStep();
         rtcTick();
-
+        /* NOS Idle loop throttle */
+        if((!cpu.monitorMode) && NOSIdle) {
+            if(cpu.regP == 2 && cpu.regFlCm == 5) {
+                idlecycles++;
+                if((idlecycles % idletrigger) == 0) {
+                     busyFlag = FALSE;
+                    /* Get out of the way if any PP is busy */
+                    for (u8 i = 0; i < ppuCount ; i++) {
+                        if(ppu[i].busy) { busyFlag = TRUE; }
+                    }
+                    if(busyFlag) { continue; }
+                    usleep((useconds_t)idletime);
+                }
+            }
+        }
 #if CcCycleTime
         cycleTime = rtcStopTimer();
 #endif

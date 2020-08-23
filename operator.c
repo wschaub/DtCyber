@@ -110,14 +110,13 @@ static void opHelpShutdown(void);
 
 static void opCmdPause(bool help, char *cmdParams);
 static void opHelpPause(void);
-
+static void opCmdIdle(bool help, char *cmdParams);
 /*
 **  ----------------
 **  Public Variables
 **  ----------------
 */
 volatile bool opActive = FALSE;
-
 /*
 **  -----------------
 **  Private Variables
@@ -142,6 +141,7 @@ static OpCmd decode[] =
     "help",                     opCmdHelp,
     "shutdown",                 opCmdShutdown,
     "pause",                    opCmdPause,
+    "idle",                     opCmdIdle,
     NULL,                       NULL
     };
 
@@ -436,7 +436,6 @@ static char *opGetString(char *inStr, char *outStr, int outSize)
 
     return(inStr + pos);
     }
-
 /*--------------------------------------------------------------------------
 **  Purpose:        Pause emulation.
 **
@@ -845,4 +844,54 @@ static void opHelpRemoveCards(void)
     printf("'remove_cards <channel>,<equipment>' remover cards from card puncher.\n");
     }
 
+/*--------------------------------------------------------------------------
+**  Purpose:        control NOS idle loop throttle.
+**
+**  Parameters:     Name        Description.
+**                  help        Request only help on this command.
+**                  cmdParams   Command parameters
+**
+**  Returns:        Nothing.
+**
+**------------------------------------------------------------------------*/
+static void opCmdIdle(bool help, char *cmdParams) {
+    int numParam;
+    unsigned int newtrigger;
+    unsigned int newsleep;
+    if(help) {
+        printf("idle report status of NOS idle loop throttle\n");
+        printf("idle <on|off> turn NOS idle loop throttle on/off\n");
+        printf("idle <n>,<n>  set number of cycles before sleep and sleep time\n");
+        return;
+    }
+
+    if(strlen(cmdParams) == 0) {
+        if(NOSIdle == TRUE) {
+            printf("idle loop throttling: ON\n");
+        } else { printf("idle loop throttling: OFF\n"); }
+        printf("usleep every %u cycles for %u usec\n",idletrigger,idletime);
+        return;
+    }
+    if(strcmp("on",cmdParams) == 0) {
+        NOSIdle = TRUE;
+        return;
+    }
+    if(strcmp("off",cmdParams) == 0) {
+        NOSIdle = FALSE;
+        return;
+    }
+    numParam = sscanf(cmdParams,"%u,%u",&newtrigger,&newsleep);
+    
+    if(numParam != 2) {
+        printf("Not enough or invalid parameters\n");
+        return;
+    }
+    if(newtrigger < 1 || newsleep < 1) {
+        printf("parameters have to be > 0\n");
+        return;
+    }
+    idletrigger = (u32)newtrigger;
+    idletime = (u32)newsleep;
+    return;
+}
 /*---------------------------  End Of File  ------------------------------*/
