@@ -496,6 +496,12 @@ static void initCyber(char *config)
     */
     initGetInteger("telnetconns", 4, &conns);
     mux6676TelnetConns = (u16)conns;
+    /*
+     ** Get NOS Idle loop settings
+     */
+    initGetInteger("nosidle", 0, &NOSIdle);
+    initGetInteger("idlecycles", 50, &idletrigger);
+    initGetInteger("idletime", 120, &idletime);
     }
 
 /*--------------------------------------------------------------------------

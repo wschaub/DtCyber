@@ -40,6 +40,7 @@
 #else
 #include <unistd.h>
 #endif
+#include <time.h>
 
 /*
 **  -----------------
@@ -66,7 +67,7 @@
 */
 static void waitTerminationMessage(void);
 static void tracePpuCalls(void);
-
+static void idle_sleep(long nsec);
 /*
 **  ----------------
 **  Public Variables
@@ -75,9 +76,9 @@ static void tracePpuCalls(void);
 char ppKeyIn;
 bool emulationActive = TRUE;
 u32 cycles;
-bool NOSIdle = FALSE;    /* NOS2 Idle loop detection */
-u32 idletrigger = 200;  /* sleep every <idletrigger> cycles of the idle loop */
-u32 idletime = 500; /* microseconds to sleep when idle */
+long  NOSIdle = 0;      /* NOS2 Idle loop detection */
+long idletrigger;      /* sleep every <idletrigger> cycles of the idle loop */
+long idletime;         /* nanoseconds to sleep when idle */
 #if CcCycleTime
 double cycleTime;
 #endif
@@ -214,7 +215,7 @@ int main(int argc, char **argv)
                         if(ppu[i].busy) { busyFlag = TRUE; }
                     }
                     if(busyFlag) { continue; }
-                    usleep((useconds_t)idletime);
+                    idle_sleep(idletime);
                 }
             }
         }
@@ -258,6 +259,13 @@ int main(int argc, char **argv)
 **
 **--------------------------------------------------------------------------
 */
+static void idle_sleep(long nsec) {
+    struct timespec tim;
+    tim.tv_sec = 0;
+    tim.tv_nsec = nsec;
+
+    nanosleep(&tim,NULL);
+}
 
 /*--------------------------------------------------------------------------
 **  Purpose:        Trace SCOPE 3.1 PPU calls (debug only).

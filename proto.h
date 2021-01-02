@@ -340,9 +340,9 @@ extern char persistDir[];
 extern u16 npuNetTelnetPort;
 extern u16 npuNetTcpConns;
 /* NOS Idle Loop throttle */
-extern bool NOSIdle;
-extern u32 idletime;
-extern u32 idletrigger;
+extern long NOSIdle;
+extern long idletime;
+extern long idletrigger;
 
 #endif /* PROTO_H */
 /*---------------------------  End Of File  ------------------------------*/

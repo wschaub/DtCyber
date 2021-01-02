@@ -856,8 +856,8 @@ static void opHelpRemoveCards(void)
 **------------------------------------------------------------------------*/
 static void opCmdIdle(bool help, char *cmdParams) {
     int numParam;
-    unsigned int newtrigger;
-    unsigned int newsleep;
+    long newtrigger;
+    long newsleep;
     if(help) {
         printf("idle report status of NOS idle loop throttle\n");
         printf("idle <on|off> turn NOS idle loop throttle on/off\n");
@@ -866,21 +866,21 @@ static void opCmdIdle(bool help, char *cmdParams) {
     }
 
     if(strlen(cmdParams) == 0) {
-        if(NOSIdle == TRUE) {
+        if(NOSIdle) {
             printf("idle loop throttling: ON\n");
         } else { printf("idle loop throttling: OFF\n"); }
-        printf("usleep every %u cycles for %u usec\n",idletrigger,idletime);
+        printf("usleep every %ld cycles for %ld usec\n",idletrigger,idletime);
         return;
     }
     if(strcmp("on",cmdParams) == 0) {
-        NOSIdle = TRUE;
+        NOSIdle = 1;
         return;
     }
     if(strcmp("off",cmdParams) == 0) {
-        NOSIdle = FALSE;
+        NOSIdle = 0;
         return;
     }
-    numParam = sscanf(cmdParams,"%u,%u",&newtrigger,&newsleep);
+    numParam = sscanf(cmdParams,"%ld,%ld",&newtrigger,&newsleep);
     
     if(numParam != 2) {
         printf("Not enough or invalid parameters\n");
@@ -890,8 +890,8 @@ static void opCmdIdle(bool help, char *cmdParams) {
         printf("parameters have to be > 0\n");
         return;
     }
-    idletrigger = (u32)newtrigger;
-    idletime = (u32)newsleep;
+    idletrigger = newtrigger;
+    idletime = newsleep;
     return;
 }
 /*---------------------------  End Of File  ------------------------------*/
