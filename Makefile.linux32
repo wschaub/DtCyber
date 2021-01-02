@@ -26,7 +26,7 @@ LIBS    = -lm -lX11 -lpthread
 LDFLAGS = -s -L/usr/X11R6/lib
 INCL    = -I/usr/X11R6/include
 
-CFLAGS  = -O2 -I. $(INCL) -std=gnu99
+CFLAGS  = -O3 -I. $(INCL) -std=gnu99
 
 HDRS    =   const.h                 \
             cyber_channel_linux.h   \
