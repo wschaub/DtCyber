@@ -39,8 +39,8 @@
 #include <winsock.h>
 #else
 #include <unistd.h>
-#endif
 #include <time.h>
+#endif
 
 /*
 **  -----------------
@@ -67,7 +67,7 @@
 */
 static void waitTerminationMessage(void);
 static void tracePpuCalls(void);
-static void idle_sleep(long nsec);
+static void idle_sleep(int msec);
 /*
 **  ----------------
 **  Public Variables
@@ -215,7 +215,7 @@ int main(int argc, char **argv)
                         if(ppu[i].busy) { busyFlag = TRUE; }
                     }
                     if(busyFlag) { continue; }
-                    idle_sleep(idletime);
+                    idle_sleep((int)idletime);
                 }
             }
         }
@@ -259,12 +259,24 @@ int main(int argc, char **argv)
 **
 **--------------------------------------------------------------------------
 */
-static void idle_sleep(long nsec) {
+
+/*--------------------------------------------------------------------------
+**  Purpose:        Provide millisecond sleep for UNIX and Windows.
+**
+**  Parameters:     Name        Description.
+**                  msec        milliseconds to sleep.
+** 
+**  Returns:        Nothing.
+**------------------------------------------------------------------------*/
+static void idle_sleep(int msec) {
+    #if defined(_WIN32)
+    Sleep(msec);
+    #else
     struct timespec tim;
     tim.tv_sec = 0;
-    tim.tv_nsec = nsec;
-
-    nanosleep(&tim,NULL);
+    tim.tv_nsec = (long)msec * 1000;
+    nanosleep(&tim,NULL); /* we don't care if we wake up early */
+    #endif
 }
 
 /*--------------------------------------------------------------------------

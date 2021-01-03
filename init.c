@@ -501,7 +501,7 @@ static void initCyber(char *config)
      */
     initGetInteger("nosidle", 0, &NOSIdle);
     initGetInteger("idlecycles", 50, &idletrigger);
-    initGetInteger("idletime", 120, &idletime);
+    initGetInteger("idletime", 1, &idletime);
     }
 
 /*--------------------------------------------------------------------------
