@@ -500,8 +500,14 @@ static void initCyber(char *config)
      ** Get NOS Idle loop settings
      */
     initGetInteger("nosidle", 0, &NOSIdle);
-    initGetInteger("idlecycles", 50, &idletrigger);
+    #if defined(_WIN32)
+    /* Sleep() on Windows seems to work OK with these defaults YMMV */
+    initGetInteger("idlecycles", 7000, &idletrigger);
     initGetInteger("idletime", 1, &idletime);
+    #else
+    initGetInteger("idlecycles", 50, &idletrigger);
+    initGetInteger("idletime", 60, &idletime);
+    #endif
     }
 
 /*--------------------------------------------------------------------------
