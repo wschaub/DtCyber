@@ -215,7 +215,7 @@ int main(int argc, char **argv)
                         if(ppu[i].busy) { busyFlag = TRUE; }
                     }
                     if(busyFlag) { continue; }
-                    idle_sleep((int)idletime);
+                    idle_sleep(idletime);
                 }
             }
         }
