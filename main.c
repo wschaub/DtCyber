@@ -67,7 +67,7 @@
 */
 static void waitTerminationMessage(void);
 static void tracePpuCalls(void);
-static void idle_sleep(int msec);
+static void idle_sleep(long interval);
 /*
 **  ----------------
 **  Public Variables
@@ -264,17 +264,22 @@ int main(int argc, char **argv)
 **  Purpose:        Provide millisecond sleep for UNIX and Windows.
 **
 **  Parameters:     Name        Description.
-**                  msec        milliseconds to sleep.
+**                  interval    # of units to sleep (platform dependant)
 ** 
 **  Returns:        Nothing.
 **------------------------------------------------------------------------*/
-static void idle_sleep(int msec) {
+static void idle_sleep(long  interval) {
     #if defined(_WIN32)
-    Sleep(msec);
+    /* I really want something like nanosleep on Windows but it's possible
+     * with enough tuning to have an acceptable delay on windows with plain
+     * old Sleep();
+     * */
+    Sleep((int)interval);
+    SwitchToThread();
     #else
     struct timespec tim;
     tim.tv_sec = 0;
-    tim.tv_nsec = (long)msec * 1000;
+    tim.tv_nsec = interval;
     nanosleep(&tim,NULL); /* we don't care if we wake up early */
     #endif
 }

@@ -869,7 +869,11 @@ static void opCmdIdle(bool help, char *cmdParams) {
         if(NOSIdle) {
             printf("idle loop throttling: ON\n");
         } else { printf("idle loop throttling: OFF\n"); }
-        printf("sleep every %ld idle cycles for %ld msec\n",idletrigger,idletime);
+        #if defined(_WIN32)
+        printf("Sleep() every %ld idle cycles for %ld msec\n",idletrigger,idletime);
+        #else
+        printf("nanosleep every %ld idle cycles for %ld nsec\n",idletrigger,idletime);
+        #endif
         return;
     }
     if(strcmp("on",cmdParams) == 0) {
